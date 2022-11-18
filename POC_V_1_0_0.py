@@ -14,10 +14,16 @@ Environment_path = "F:\Blockchain\EF\POC\Hardhat_Env"
 # Adjust size
 root.geometry( "800x400" )
 
+#Token_factory_Code
+def Token_factory_Code():
+    Dao_Template.write("")
+
+
 # Copy Code
-def Copy_code():   
-    #Contract_path =   Environment_path + '\contracts\Temp_Contract.sol'
-    Contract_path = "F:\Blockchain\EF\POC\Hardhat_Env\contracts\Temp_Contract.sol"
+def Copy_code():  
+    Token_factory_Code();
+    Contract_path =   Environment_path + '\contracts\Temp_Contract.sol'
+    #Contract_path = "F:\Blockchain\EF\POC\Hardhat_Env\contracts\Temp_Contract.sol"
     print("*******"+Contract_path+"*******")
     Dao_Template = open(Contract_path, "a")
     Dao_Template.write("")
@@ -29,9 +35,9 @@ def Copy_code():
 def Generate_DAO():
     Copy_code();
     os.system('cd' + Environment_path)
-    stream = os.popen('cmd /k "npx hardhat compile"') 
+    stream=os.popen('cmd /k "npx hardhat compile"') 
     output = stream.read()
-    print(output) 
+    #print(output) 
     finalRead = str(output)
     text_info.insert(tk.END, finalRead)
   

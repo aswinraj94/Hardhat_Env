@@ -14,6 +14,9 @@ module.exports = {
         version: "0.4.24",
         settings: {},
       },
+      {
+        version: "0.8.13",
+      },
     ],
   },
   networks: {
