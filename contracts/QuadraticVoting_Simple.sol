@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.0 <0.9.0;
 
-import "./Membership_Abstraction.sol";
+import "./IToken_Factory.sol";
 
-contract QuadraticVoting is Membership_Abstraction{
+contract QuadraticVoting_Simple{
 
 
   struct Item {
@@ -18,13 +18,23 @@ contract QuadraticVoting is Membership_Abstraction{
     uint totalNegativeWeight;
   }
   
-  uint constant public voteCost = 10_000_000_000; // wei
+  IMembership_Abstraction Membership_Abstraction;
+  
+  uint256 public voteCost; 
 
   mapping(uint => Item) public items; // itemId => id
   uint public itemCount = 0; // also next itemId
   
   event ItemCreated(uint itemId);
   event Voted(uint itemId, uint weight, bool positive);
+  
+  
+  constructor (address Membership_Abstraction_contract,uint256 CostofVote) {
+    Membership_Abstraction = IMembership_Abstraction(Membership_Abstraction_contract);
+	voteCost=CostofVote;
+  }
+  
+  //Membership_Abstraction.votingPower(msg.sender)
 
   function currentWeight(uint itemId, address addr, bool isPositive) public view returns(uint) {
     if (isPositive) {
@@ -34,7 +44,7 @@ contract QuadraticVoting is Membership_Abstraction{
     }
   }
 
-  function calcCost(uint currWeight, uint weight) public pure returns(uint) {
+  function calcCost(uint currWeight, uint weight) public view returns(uint) {
     if (currWeight > weight) {
       return weight * weight * voteCost; // cost is always quadratic
     } else if (currWeight < weight) {
@@ -58,30 +68,38 @@ contract QuadraticVoting is Membership_Abstraction{
   }
   
   function positiveVote(uint itemId, uint weight) public payable {
+    uint256 VotingPower_;
     Item storage item = items[itemId];
     require(msg.sender != item.owner); // owners cannot vote on their own items
-
+	
     uint currWeight = item.positiveVotes[msg.sender];
     if (currWeight == weight) {
       return; // no need to process further if vote has not changed
     }
 
     uint cost = calcCost(currWeight, weight);
-    require(msg.value >= cost); // msg.value must be enough to cover the cost
+    require(Membership_Abstraction.votingPower(msg.sender) >= cost); // msg.value must be enough to cover the cost
 
     item.positiveVotes[msg.sender] = weight;
     item.totalPositiveWeight += weight - currWeight;
+	
+	//Decrease the voting power of the user
+	VotingPower_=Membership_Abstraction.votingPower(msg.sender);
+	VotingPower_-= cost;
+	Membership_Abstraction.approve(msg.sender,VotingPower_);
+	Membership_Abstraction.transferFrom(msg.sender,item.owner,VotingPower_);
 
     // weight cannot be both positive and negative simultaneously
     item.totalNegativeWeight -= item.negativeVotes[msg.sender];
     item.negativeVotes[msg.sender] = 0;
 
-    item.amount += msg.value; // reward creator of item for their contribution
+    //item.amount += msg.value; // reward creator of item for their contribution
 
     emit Voted(itemId, weight, true);
   }
   
   function negativeVote(uint itemId, uint weight) public payable {
+    uint256 VotingPower_;
     Item storage item = items[itemId];
     require(msg.sender != item.owner);
 
@@ -91,10 +109,16 @@ contract QuadraticVoting is Membership_Abstraction{
     }
 
     uint cost = calcCost(currWeight, weight);
-    require(msg.value >= cost); // msg.value must be enough to cover the cost
+    require(Membership_Abstraction.votingPower(msg.sender)>= cost); // msg.value must be enough to cover the cost
 
     item.negativeVotes[msg.sender] = weight;
     item.totalNegativeWeight += weight - currWeight;
+	
+	//Decrease the voting power of the user
+	VotingPower_=Membership_Abstraction.votingPower(msg.sender);
+	VotingPower_-= cost;
+	Membership_Abstraction.approve(msg.sender,VotingPower_);
+	Membership_Abstraction.transferFrom(msg.sender,item.owner,VotingPower_);
 
     // weight cannot be both positive and negative simultaneously
     item.totalPositiveWeight -= item.positiveVotes[msg.sender];

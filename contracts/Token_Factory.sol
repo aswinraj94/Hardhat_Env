@@ -2,22 +2,23 @@
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "./Membership_Abstraction.sol";
 
-contract Token_Factory is IERC20, Membership_Abstraction{
+contract Token_Factory is IERC20{
     uint256 public totalSupply;
     mapping(address => uint) public balanceOf;
     mapping(address => mapping(address => uint)) public allowance;
+	
+	mapping(address => uint256) public votingPower;
 
 	string public name ;
     string public symbol;
     uint8 public decimals ;
 	bool public Intialized = false ;
 	address private _owner;
+
 	
 	event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
-	
 	modifier ToIntialize(){
 	require(Intialized == false);
 	 _;
@@ -32,11 +33,13 @@ contract Token_Factory is IERC20, Membership_Abstraction{
         return msg.sender == _owner;
     }
 	
-    function intializer(
+    //function intializer( //external ToIntialize{
+        constructor(
 	    uint256 _totalSupply,
         string memory _tokenName,
         uint8 _decimalUnits,
-        string memory _tokenSymbol) external ToIntialize{
+        string memory _tokenSymbol) {
+        
 		
         symbol = _tokenSymbol;
         name = _tokenName;
@@ -54,7 +57,7 @@ contract Token_Factory is IERC20, Membership_Abstraction{
 
     function transfer(address recipient, uint amount) external returns (bool) {
 		require(balanceOf[msg.sender]>=amount,"Not enough Balance");
-		Members_Data[recipient].IsaMember = true;
+		// Members_Data[recipient].IsaMember = true;
         balanceOf[msg.sender] -= amount;
         balanceOf[recipient] += amount;
         votingPower[msg.sender] -= amount;
@@ -75,7 +78,7 @@ contract Token_Factory is IERC20, Membership_Abstraction{
         uint amount
     ) external returns (bool) {
 		require(balanceOf[msg.sender]>=amount,"Not enough Balance");
-		Members_Data[recipient].IsaMember = true;
+		// Members_Data[recipient].IsaMember = true;
         allowance[sender][msg.sender] -= amount;
         balanceOf[sender] -= amount;
         balanceOf[recipient] += amount;

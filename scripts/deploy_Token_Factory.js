@@ -5,17 +5,21 @@ async function main() {
   A ContractFactory in ethers.js is an abstraction used to deploy new smart contracts,
   so whitelistContract here is a factory for instances of our Whitelist contract.
   */
-  const whitelistContract = await ethers.getContractFactory("Whitelist");
+  const Token_Factory_Contract = await ethers.getContractFactory("Token_Factory");
 
   // here we deploy the contract
-  const deployedWhitelistContract = await whitelistContract.deploy(10);
+  const deployed_Token_Factory_Contract = await Token_Factory_Contract.deploy(10000,"Test_Token_Factory",1,"TTF");
   // 10 is the Maximum number of whitelisted addresses allowed
 
   // Wait for it to finish deploying
-  await deployedWhitelistContract.deployed();
+  await deployed_Token_Factory_Contract.deployed();
 
   // print the address of the deployed contract
-  console.log("Whitelist Contract Address:", deployedWhitelistContract.address);
+  console.log("Token_Factory Contract Address:", deployed_Token_Factory_Contract.address);
+  var fsp = require('fs/promises');
+  await fsp.writeFile("constants/index.js", "const TOKEN_FACTORY_CONTRACT_ADDRESS = """+ deployed_Token_Factory_Contract.address + """;module.exports = { TOKEN_FACTORY_CONTRACT_ADDRESS };");
+  
+  
 }
 
 // Call the main function and catch if there is any error
