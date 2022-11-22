@@ -7,5 +7,7 @@ interface IMembership_Abstraction {
   function approve(address spender, uint amount) external returns (bool);
   
   function transferFrom(address sender,address recipient,uint amount) external returns (bool);
+  
+  function transfer(address recipient, uint amount) external returns (bool);
 
 }

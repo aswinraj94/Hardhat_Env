@@ -8,7 +8,7 @@ async function main() {
   const Token_Factory_Contract = await ethers.getContractFactory("Token_Factory");
 
   // here we deploy the contract
-  const deployed_Token_Factory_Contract = await Token_Factory_Contract.deploy(10000,"Test_Token_Factory",1,"TTF");
+  const deployed_Token_Factory_Contract = await Token_Factory_Contract.deploy(10000000,"Test_Token_Factory",1,"TTF");
   // 10 is the Maximum number of whitelisted addresses allowed
 
   // Wait for it to finish deploying
@@ -17,7 +17,7 @@ async function main() {
   // print the address of the deployed contract
   console.log("Token_Factory Contract Address:", deployed_Token_Factory_Contract.address);
   var fsp = require('fs/promises');
-  await fsp.writeFile("constants/index.js", "const TOKEN_FACTORY_CONTRACT_ADDRESS = """+ deployed_Token_Factory_Contract.address + """;module.exports = { TOKEN_FACTORY_CONTRACT_ADDRESS };");
+  await fsp.writeFile("constants/index.js", "const TOKEN_FACTORY_CONTRACT_ADDRESS = "+'"'+ deployed_Token_Factory_Contract.address +'"'+ ";module.exports = { TOKEN_FACTORY_CONTRACT_ADDRESS };");
   
   
 }

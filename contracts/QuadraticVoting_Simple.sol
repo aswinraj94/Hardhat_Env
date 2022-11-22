@@ -68,9 +68,9 @@ contract QuadraticVoting_Simple{
   }
   
   function positiveVote(uint itemId, uint weight) public payable {
-    uint256 VotingPower_;
+    //uint256 VotingPower_;
     Item storage item = items[itemId];
-    require(msg.sender != item.owner); // owners cannot vote on their own items
+    require(msg.sender != item.owner,"Item Owner cannot Vote"); // owners cannot vote on their own items
 	
     uint currWeight = item.positiveVotes[msg.sender];
     if (currWeight == weight) {
@@ -78,16 +78,16 @@ contract QuadraticVoting_Simple{
     }
 
     uint cost = calcCost(currWeight, weight);
-    require(Membership_Abstraction.votingPower(msg.sender) >= cost); // msg.value must be enough to cover the cost
+    require(Membership_Abstraction.votingPower(msg.sender) >= cost,"Not Enough Balance to Vote"); // msg.value must be enough to cover the cost
 
     item.positiveVotes[msg.sender] = weight;
     item.totalPositiveWeight += weight - currWeight;
 	
 	//Decrease the voting power of the user
-	VotingPower_=Membership_Abstraction.votingPower(msg.sender);
-	VotingPower_-= cost;
-	Membership_Abstraction.approve(msg.sender,VotingPower_);
-	Membership_Abstraction.transferFrom(msg.sender,item.owner,VotingPower_);
+	//VotingPower_=Membership_Abstraction.votingPower(msg.sender);
+	//VotingPower_-= cost;
+
+	Membership_Abstraction.transferFrom(msg.sender,item.owner,cost);
 
     // weight cannot be both positive and negative simultaneously
     item.totalNegativeWeight -= item.negativeVotes[msg.sender];
@@ -99,9 +99,9 @@ contract QuadraticVoting_Simple{
   }
   
   function negativeVote(uint itemId, uint weight) public payable {
-    uint256 VotingPower_;
+    //uint256 VotingPower_;
     Item storage item = items[itemId];
-    require(msg.sender != item.owner);
+    require(msg.sender != item.owner,"Item Owner cannot Vote");
 
     uint currWeight = item.negativeVotes[msg.sender];
     if (currWeight == weight) {
@@ -109,33 +109,33 @@ contract QuadraticVoting_Simple{
     }
 
     uint cost = calcCost(currWeight, weight);
-    require(Membership_Abstraction.votingPower(msg.sender)>= cost); // msg.value must be enough to cover the cost
+    require(Membership_Abstraction.votingPower(msg.sender)>= cost,"Not Enough Balance to Vote"); // msg.value must be enough to cover the cost
 
     item.negativeVotes[msg.sender] = weight;
     item.totalNegativeWeight += weight - currWeight;
 	
 	//Decrease the voting power of the user
-	VotingPower_=Membership_Abstraction.votingPower(msg.sender);
-	VotingPower_-= cost;
-	Membership_Abstraction.approve(msg.sender,VotingPower_);
-	Membership_Abstraction.transferFrom(msg.sender,item.owner,VotingPower_);
+	//VotingPower_=Membership_Abstraction.votingPower(msg.sender);
+	//VotingPower_-= cost;
+	
+	Membership_Abstraction.transferFrom(msg.sender,item.owner,cost);
 
     // weight cannot be both positive and negative simultaneously
     item.totalPositiveWeight -= item.positiveVotes[msg.sender];
     item.positiveVotes[msg.sender] = 0;
 
     // distribute voting cost to every item except for this one
-    uint reward = msg.value / (itemCount - 1);
-    for (uint i = 0; i < itemCount; i++) {
-      if (i != itemId) items[i].amount += reward;
-    }
+    // uint reward = msg.value / (itemCount - 1);
+    // for (uint i = 0; i < itemCount; i++) {
+      // if (i != itemId) items[i].amount += reward;
+    // }
 
     emit Voted(itemId, weight, false);
   }
   
   function claim(uint itemId) public {
     Item storage item = items[itemId];
-    require(msg.sender == item.owner);
+    require(msg.sender == item.owner,"Not the Item Owner");
     item.owner.transfer(item.amount);
     item.amount = 0;
   }

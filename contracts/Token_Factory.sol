@@ -73,18 +73,18 @@ contract Token_Factory is IERC20{
     }
 
     function transferFrom(
-        address sender,
+        address spender,
         address recipient,
         uint amount
     ) external returns (bool) {
-		require(balanceOf[msg.sender]>=amount,"Not enough Balance");
+		require(balanceOf[spender]>=amount,"Not enough Balance");
 		// Members_Data[recipient].IsaMember = true;
-        allowance[sender][msg.sender] -= amount;
-        balanceOf[sender] -= amount;
+        //allowance[recipient][spender] -= amount;
+        balanceOf[spender] -= amount;
         balanceOf[recipient] += amount;
-        votingPower[sender] -= amount;
+        votingPower[spender] -= amount;
         votingPower[recipient] += amount;
-        emit Transfer(sender, recipient, amount);
+        emit Transfer(spender, recipient, amount);
         return true;
     }
 

@@ -13,18 +13,18 @@ async function main() {
   const Quadratic_Voting_Contract = await ethers.getContractFactory("QuadraticVoting_Simple");
 
   // deploy the contract
-  const deployedCryptoDevsContract = await Quadratic_Voting_Contract.deploy(
+  const deployedQuadratic_Voting_Contract = await Quadratic_Voting_Contract.deploy(
     TokenFactoryContract,
 	100
   );
 
   // print the address of the deployed contract
   console.log(
-    "Crypto Devs Contract Address:",
-    deployedCryptoDevsContract.address
+    "Quadratic_Voting_Contract Address:",
+    deployedQuadratic_Voting_Contract.address
   );
   var fsp = require('fs/promises');
-  await fsp.writeFile("constants/QuadraticVoting_Simple_Address.txt",  deployedCryptoDevsContract.address );
+  await fsp.writeFile("constants/QuadraticVoting_Simple_Address.txt",  deployedQuadratic_Voting_Contract.address );
   
   
 }
