@@ -4,6 +4,8 @@ npx hardhat run scripts/deploy_Quadratic_Voting.js --network goerli
 
 npx hardhat run scripts/deploy_Uniswap.js --network goerli 
 
+npx hardhat run scripts/deploy_Quadratic_Voting_For_uniswap.js --network goerli 
+
 
 Create item => 0x3fd54831f488a22b28398de0c567a3b064b937f54f81739ae9bd545967f3abab,"Image","test"
 
@@ -32,5 +34,8 @@ Quadratic voting Contracts:
 7.) 0x49B3558EEDcA953F04a7ec71754a00b72D46A1E8
 8.) 0xA2d0e2419100DbBd2935E6f720578F6bf4FFA655
 9.) 0x898A83A773E5a406972BE70Df144f06f067253F6
+
+
+0x0cf76E6710FCFA84319583ef4E94AdE1b555ecF5,0x4d02583363C204620d135d3848Fd84fa8E52C690,0x0cf76E6710FCFA84319583ef4E94AdE1b555ecF5
 
 

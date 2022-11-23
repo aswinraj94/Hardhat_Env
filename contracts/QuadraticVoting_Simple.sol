@@ -66,11 +66,16 @@ contract QuadraticVoting_Simple{
     item.description = description;
     emit ItemCreated(itemId);
   }
-  
+ 
+  function Approve_Trascation(uint cost) public {
+	Membership_Abstraction.approve(msg.sender,cost);
+  }  
+ 
+ 
   function positiveVote(uint itemId, uint weight) public payable {
     //uint256 VotingPower_;
     Item storage item = items[itemId];
-    require(msg.sender != item.owner,"Item Owner cannot Vote"); // owners cannot vote on their own items
+    //require(msg.sender != item.owner,"Item Owner cannot Vote"); // owners cannot vote on their own items
 	
     uint currWeight = item.positiveVotes[msg.sender];
     if (currWeight == weight) {
@@ -78,7 +83,7 @@ contract QuadraticVoting_Simple{
     }
 
     uint cost = calcCost(currWeight, weight);
-    require(Membership_Abstraction.votingPower(msg.sender) >= cost,"Not Enough Balance to Vote"); // msg.value must be enough to cover the cost
+    //require(Membership_Abstraction.votingPower(msg.sender) >= cost,"Not Enough Balance to Vote"); // msg.value must be enough to cover the cost
 
     item.positiveVotes[msg.sender] = weight;
     item.totalPositiveWeight += weight - currWeight;
@@ -87,6 +92,7 @@ contract QuadraticVoting_Simple{
 	//VotingPower_=Membership_Abstraction.votingPower(msg.sender);
 	//VotingPower_-= cost;
 
+    Membership_Abstraction.approve(msg.sender,cost);
 	Membership_Abstraction.transferFrom(msg.sender,item.owner,cost);
 
     // weight cannot be both positive and negative simultaneously
@@ -101,7 +107,7 @@ contract QuadraticVoting_Simple{
   function negativeVote(uint itemId, uint weight) public payable {
     //uint256 VotingPower_;
     Item storage item = items[itemId];
-    require(msg.sender != item.owner,"Item Owner cannot Vote");
+    //require(msg.sender != item.owner,"Item Owner cannot Vote");
 
     uint currWeight = item.negativeVotes[msg.sender];
     if (currWeight == weight) {
@@ -109,7 +115,7 @@ contract QuadraticVoting_Simple{
     }
 
     uint cost = calcCost(currWeight, weight);
-    require(Membership_Abstraction.votingPower(msg.sender)>= cost,"Not Enough Balance to Vote"); // msg.value must be enough to cover the cost
+    //require(Membership_Abstraction.votingPower(msg.sender)>= cost,"Not Enough Balance to Vote"); // msg.value must be enough to cover the cost
 
     item.negativeVotes[msg.sender] = weight;
     item.totalNegativeWeight += weight - currWeight;
