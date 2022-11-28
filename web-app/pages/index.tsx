@@ -3,8 +3,13 @@ import styles from "../styles/Home.module.css";
 import Web3Modal from "web3modal";
 import { providers, Contract } from "ethers";
 import { useEffect, useRef, useState } from "react";
-import { WHITELIST_CONTRACT_ADDRESS, abi } from "../constants";
+import { VOTING_CONTRACT_ADDRESS } from "../constants";
+import { MEMBERSHIP_CONTRACT_ADDRESS } from "../constants";
+import {abi as abi_Token_Factory} from "../../Hardhat/artifacts/contracts/IToken_Factory.sol/IMembership_Abstraction.json"
+import {abi as abi_quadratic_voting} from "../../Hardhat/artifacts/contracts/QuadraticVoting_Simple.sol/QuadraticVoting_Simple.json"
+//import { run } from "node:test";
 
+ 
 export default function Home() {
   // walletConnected keep track of whether the user's wallet is connected or not
   const [walletConnected, setWalletConnected] = useState(false);
@@ -16,6 +21,13 @@ export default function Home() {
   const [numberOfWhitelisted, setNumberOfWhitelisted] = useState(0);
   // Create a reference to the Web3 Modal (used for connecting to Metamask) which persists as long as the page is open
   const web3ModalRef = useRef();
+
+  // POC
+  let  Membership_modules  = ["Token Factory", "NFT Membership"];
+  let  Membership_module = "Token Factory";
+  let  Voting_modules  = ["one to one voting", "Qudratic voting"];
+  let  Voting_module = "Qudratic voting";
+
 
   /**
    * Returns a Provider or Signer object representing the Ethereum RPC with or without the
@@ -58,13 +70,26 @@ export default function Home() {
       const signer = await getProviderOrSigner(true);
       // Create a new instance of the Contract with a Signer, which allows
       // update methods
-      const whitelistContract = new Contract(
-        WHITELIST_CONTRACT_ADDRESS,
-        abi,
+ 
+      if(Membership_module == "Token Factory"){
+        //await run(npx hardhat run scripts/deploy.js --network goerli);
+      }
+      if (Voting_module == "Qudratic voting"){
+
+      }
+      
+      const MembershipContract = new Contract(
+        MEMBERSHIP_CONTRACT_ADDRESS,
+        abi_Token_Factory,
         signer
       );
+      const VotingContract = new Contract(
+        VOTING_CONTRACT_ADDRESS,
+        abi_quadratic_voting,
+        signer
+      );  
       // call the addAddressToWhitelist from the contract
-      const tx = await whitelistContract.addAddressToWhitelist();
+      const tx = await VotingContract.addAddressToWhitelist();
       setLoading(true);
       // wait for the transaction to get mined
       await tx.wait();
@@ -88,8 +113,8 @@ export default function Home() {
       // We connect to the Contract using a Provider, so we will only
       // have read-only access to the Contract
       const whitelistContract = new Contract(
-        WHITELIST_CONTRACT_ADDRESS,
-        abi,
+        VOTING_CONTRACT_ADDRESS,
+        abi_Token_Factory,
         provider
       );
       // call the numAddressesWhitelisted from the contract
@@ -111,8 +136,8 @@ export default function Home() {
       // We can use it in it's place
       const signer = await getProviderOrSigner(true);
       const whitelistContract = new Contract(
-        WHITELIST_CONTRACT_ADDRESS,
-        abi,
+        VOTING_CONTRACT_ADDRESS,
+        abi_Token_Factory,
         signer
       );
       // Get the address associated to the signer which is connected to  MetaMask
@@ -173,6 +198,24 @@ export default function Home() {
     }
   };
 
+///Recommendation
+
+
+//let  Membership_modules : string[] = ["Token Factory", "NFT Membership"];
+const [MembershipOption, SetMembershipOption] = useState(["Token Factory"]);
+const [searchText, setSearchText] = useState("");
+
+useEffect(() => {
+
+}, [MembershipOption]);
+
+
+function SelectMembership() {
+  var index=0;
+  var Membership_module = Membership_modules[index];
+  SetMembershipOption(Membership_modules);
+}
+
   // useEffects are used to react to changes in state of the website
   // The array at the end of function call represents what state changes will trigger this effect
   // In this case, whenever the value of `walletConnected` changes - this effect will be called
@@ -199,10 +242,19 @@ export default function Home() {
       </Head>
       <div className={styles.main}>
         <div>
-          <h1 className={styles.title}>Welcome to Crypto Devs!</h1>
+          <h1 className={styles.title}>Welcome to Excelsior Labs</h1>
           <div className={styles.description}>
-            Its an NFT collection for developers in Crypto.
+            Select the modules to deploy your smart contract
           </div>
+
+
+           <div>
+            <p>{MembershipOption}</p>
+              <button onClick={SelectMembership}>Select</button>
+           </div>
+
+
+
           <div className={styles.description}>
             {numberOfWhitelisted} have already joined the Whitelist
           </div>

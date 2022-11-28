@@ -19,6 +19,10 @@ async function main() {
   var fsp = require('fs/promises');
   await fsp.writeFile("constants/index.js", "const TOKEN_FACTORY_CONTRACT_ADDRESS = "+'"'+ deployed_Token_Factory_Contract.address +'"'+ ";module.exports = { TOKEN_FACTORY_CONTRACT_ADDRESS };");
   
+
+  var path_relative ="Hardhat_Env/../../"
+  await fsp.writeFile(path_relative+"web-app/constants/index.js", " export const VOTING_CONTRACT_ADDRESS = "+'"'+deployed_Token_Factory_Contract.address+'";');
+
   
 }
 

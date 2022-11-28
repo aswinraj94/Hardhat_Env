@@ -26,6 +26,7 @@ async function main() {
   var fsp = require('fs/promises');
   await fsp.writeFile("constants/QuadraticVoting_Simple_Address.txt",  deployedQuadratic_Voting_Contract.address );
   
+  await fsp.writeFile("web-app/constants/index.js", "const TOKEN_FACTORY_CONTRACT_ADDRESS = "+'"'+ deployed_Token_Factory_Contract.address +'"'+ ";module.exports = { TOKEN_FACTORY_CONTRACT_ADDRESS };");
   
 }
 
